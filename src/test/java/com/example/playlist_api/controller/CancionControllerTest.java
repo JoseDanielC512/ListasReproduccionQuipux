@@ -1,19 +1,26 @@
 package com.example.playlist_api.controller;
 
+
 import com.example.playlist_api.dto.CancionDto;
 import com.example.playlist_api.exception.ResourceNotFoundException;
 import com.example.playlist_api.service.CancionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.example.playlist_api.security.JwtAuthenticationEntryPoint;
+import com.example.playlist_api.security.JwtRequestFilter;
+import com.example.playlist_api.security.JwtUtil;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+
 import java.util.Arrays;
 import java.util.List;
+
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -21,17 +28,38 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(CancionController.class)
+
+@WebMvcTest(controllers = CancionController.class)
 class CancionControllerTest {
+
 
     @Autowired
     private MockMvc mockMvc;
 
+
     @Autowired
     private ObjectMapper objectMapper;
 
+
     @MockBean
     private CancionService cancionService;
+
+
+    @MockBean
+    private UserDetailsService userDetailsService;
+
+
+    @MockBean
+    private JwtUtil jwtUtil;
+
+
+    @MockBean
+    private JwtRequestFilter jwtRequestFilter;
+
+
+    @MockBean
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
 
     @Test
     @WithMockUser(roles = "ADMIN")
