@@ -86,11 +86,11 @@ Para cada petición a los endpoints protegidos, deberás incluir el token JWT ob
 
 A continuación, se detallan los endpoints disponibles y los roles requeridos:
 
-#### Endpoints de CancionController (`/api/songs`)
+#### Endpoints de CancionController (`/api/canciones`)
 
 *   **Crear una Nueva Canción**
     *   Método: `POST`
-    *   URL: `/api/songs`
+    *   URL: `/api/canciones`
     *   Rol Requerido: `ADMIN`
     *   Body: JSON con los datos de la canción (`titulo`, `artista`, `album`, `anno`, `genero`).
     *   Ejemplo de Body:
@@ -107,19 +107,19 @@ A continuación, se detallan los endpoints disponibles y los roles requeridos:
 
 *   **Obtener Todas las Canciones**
     *   Método: `GET`
-    *   URL: `/api/songs`
+    *   URL: `/api/canciones`
     *   Rol Requerido: `ADMIN` o `USER`
     *   Prueba en Postman: "ObtenerCanciones"
 
 *   **Obtener una Canción por ID**
     *   Método: `GET`
-    *   URL: `/api/songs/{id}`
+    *   URL: `/api/canciones/{id}`
     *   Rol Requerido: `ADMIN` o `USER`
     *   Prueba en Postman: "ObtenerCancionPorId" (modifica el ID en la URL)
 
 *   **Actualizar una Canción**
     *   Método: `PUT`
-    *   URL: `/api/songs/{id}`
+    *   URL: `/api/canciones/{id}`
     *   Rol Requerido: `ADMIN`
     *   Body: JSON con los datos actualizados de la canción.
     *   Ejemplo de Body:
@@ -136,30 +136,30 @@ A continuación, se detallan los endpoints disponibles y los roles requeridos:
 
 *   **Borrar una Canción**
     *   Método: `DELETE`
-    *   URL: `/api/songs/{id}`
+    *   URL: `/api/canciones/{id}`
     *   Rol Requerido: `ADMIN`
     *   Prueba en Postman: "EliminarCancion" (modifica el ID en la URL)
 
-#### Endpoints de PlaylistController (`/api/lists`)
+#### Endpoints de PlaylistController (`/api/listas`)
 
 *   **Crear una Nueva Lista de Reproducción (con IDs de canciones)**
     *   Método: `POST`
-    *   URL: `/api/lists`
+    *   URL: `/api/listas`
     *   Rol Requerido: `ADMIN`
-    *   Body: JSON con `nombre`, `descripcion` y un array opcional `songIds`.
+    *   Body: JSON con `nombre`, `descripcion` y un array opcional `cancionIds`.
     *   Ejemplo de Body:
         ```json
         {
             "nombre": "Rock Clásico",
             "descripcion": "Lo mejor del rock de los 70s y 80s",
-            "songIds": [1, 2]
+            "cancionIds": [1, 2]
         }
         ```
     *   Prueba en Postman: "CrearListaReproduccion" (ajusta el Body con IDs de canciones existentes)
 
 *   **Crear Lista con Canción Inicial**
     *   Método: `POST`
-    *   URL: `/api/lists/with-initial-song/{songId}`
+    *   URL: `/api/listas/con-cancion-inicial/{idCancion}`
     *   Rol Requerido: `ADMIN`
     *   Body: JSON con `nombre` y `descripcion`.
     *   Ejemplo de Body:
@@ -169,50 +169,50 @@ A continuación, se detallan los endpoints disponibles y los roles requeridos:
             "descripcion": "Canciones para la carretera"
         }
         ```
-    *   Prueba en Postman: "CrearListaReproduccionConCancion" (modifica el `songId` en la URL y ajusta el Body)
+    *   Prueba en Postman: "CrearListaReproduccionConCancion" (modifica el `idCancion` en la URL y ajusta el Body)
 
 *   **Obtener Todas las Listas de Reproducción**
     *   Método: `GET`
-    *   URL: `/api/lists`
+    *   URL: `/api/listas`
     *   Rol Requerido: `ADMIN` o `USER`
     *   Prueba en Postman: "ObtenerListasReproduccion"
 
 *   **Obtener una Lista por Nombre**
     *   Método: `GET`
-    *   URL: `/api/lists/byName/{listName}`
+    *   URL: `/api/listas/porNombre/{nombreLista}`
     *   Rol Requerido: `ADMIN` o `USER`
     *   *Nota: Esta petición no está directamente en la colección de Postman proporcionada, pero puedes crearla fácilmente basándote en las otras peticiones GET.*
 
 *   **Obtener una Lista por ID**
     *   Método: `GET`
-    *   URL: `/api/lists/{id}`
+    *   URL: `/api/listas/{id}`
     *   Rol Requerido: `ADMIN` o `USER`
     *   Prueba en Postman: "ObtenerListasReproduccionPorId" (modifica el ID en la URL)
 
 *   **Actualizar una Lista de Reproducción**
     *   Método: `PUT`
-    *   URL: `/api/lists/{id}`
+    *   URL: `/api/listas/{id}`
     *   Rol Requerido: `ADMIN`
-    *   Body: JSON con los datos actualizados de la lista (`nombre`, `descripcion`, `songIds`).
+    *   Body: JSON con los datos actualizados de la lista (`nombre`, `descripcion`, `cancionIds`).
     *   Ejemplo de Body:
         ```json
         {
             "nombre": "Rock Clásico V2",
             "descripcion": "Actualizado con más energía",
-            "songIds": [1, 3]
+            "cancionIds": [1, 3]
         }
         ```
     *   Prueba en Postman: "ActualizarListasReproduccion" (modifica el ID en la URL y el Body)
 
 *   **Borrar una Lista por Nombre**
     *   Método: `DELETE`
-    *   URL: `/api/lists/byName/{listName}`
+    *   URL: `/api/listas/porNombre/{nombreLista}`
     *   Rol Requerido: `ADMIN`
     *   *Nota: Esta petición no está directamente en la colección de Postman proporcionada, pero puedes crearla fácilmente basándote en las otras peticiones DELETE.*
 
 *   **Borrar una Lista por ID**
     *   Método: `DELETE`
-    *   URL: `/api/lists/{id}`
+    *   URL: `/api/listas/{id}`
     *   Rol Requerido: `ADMIN`
     *   Prueba en Postman: "EliminarListaReproduccion" (modifica el ID en la URL)
 
