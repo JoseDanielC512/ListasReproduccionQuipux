@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CancionRepository extends JpaRepository<Cancion, Long> {
-    // Métodos de búsqueda personalizados si son necesarios
 }

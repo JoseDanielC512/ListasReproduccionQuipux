@@ -40,11 +40,13 @@ public class ListaReproduccionService {
         listaReproduccion.setDescripcion(listaReproduccionRequestDto.getDescripcion());
 
         if (listaReproduccionRequestDto.getCancionIds() != null && !listaReproduccionRequestDto.getCancionIds().isEmpty()) {
-            Set<Cancion> canciones = new HashSet<>(cancionRepository.findAllById(listaReproduccionRequestDto.getCancionIds()));
-            if (canciones.size() != listaReproduccionRequestDto.getCancionIds().size()) {
-                throw new ResourceNotFoundException("Cancion", "ids", listaReproduccionRequestDto.getCancionIds().toString() + " - Algunas canciones no fueron encontradas.");
+            Set<Cancion> cancionesEncontradas = new HashSet<>();
+            for (Long cancionId : listaReproduccionRequestDto.getCancionIds()) {
+                Cancion cancion = cancionRepository.findById(cancionId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Cancion", "id", cancionId.toString()));
+                cancionesEncontradas.add(cancion);
             }
-            listaReproduccion.setCanciones(canciones);
+            listaReproduccion.setCanciones(cancionesEncontradas);
         }
         
         ListaReproduccion savedListaReproduccion = listaReproduccionRepository.save(listaReproduccion);
@@ -103,13 +105,15 @@ public class ListaReproduccionService {
         existingListaReproduccion.setNombre(listaReproduccionRequestDto.getNombre());
         existingListaReproduccion.setDescripcion(listaReproduccionRequestDto.getDescripcion());
 
-        existingListaReproduccion.getCanciones().clear();
+        existingListaReproduccion.getCanciones().clear(); // Limpiar canciones existentes
         if (listaReproduccionRequestDto.getCancionIds() != null && !listaReproduccionRequestDto.getCancionIds().isEmpty()) {
-            Set<Cancion> canciones = new HashSet<>(cancionRepository.findAllById(listaReproduccionRequestDto.getCancionIds()));
-             if (canciones.size() != listaReproduccionRequestDto.getCancionIds().size()) {
-                throw new ResourceNotFoundException("Cancion", "ids", listaReproduccionRequestDto.getCancionIds().toString() + " - Algunas canciones no fueron encontradas para actualizar.");
+            Set<Cancion> cancionesParaActualizar = new HashSet<>();
+            for (Long cancionId : listaReproduccionRequestDto.getCancionIds()) {
+                Cancion cancion = cancionRepository.findById(cancionId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Cancion", "id", cancionId.toString()));
+                cancionesParaActualizar.add(cancion);
             }
-            existingListaReproduccion.setCanciones(canciones);
+            existingListaReproduccion.setCanciones(cancionesParaActualizar);
         }
 
         ListaReproduccion updatedListaReproduccion = listaReproduccionRepository.save(existingListaReproduccion);

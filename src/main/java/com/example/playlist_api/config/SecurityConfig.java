@@ -38,24 +38,47 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+    /**
+     * Configura la cadena de filtros de seguridad HTTP para la aplicación.
+     * Define las reglas de autorización, el manejo de sesiones y la integración de JWT.
+     *
+     * @param httpSecurity El objeto HttpSecurity proporcionado por Spring Security para configurar la seguridad web.
+     * @return Una instancia de SecurityFilterChain que representa la cadena de filtros de seguridad configurada.
+     * @throws Exception Si ocurre un error durante la configuración de seguridad.
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
+            // Deshabilita la protección CSRF (Cross-Site Request Forgery) ya que la API es stateless y usa JWT.
             .csrf(csrf -> csrf.disable())
+            // Configura las reglas de autorización para las peticiones HTTP.
             .authorizeHttpRequests(auth -> auth
+                // Permite el acceso público al endpoint de login.
                 .requestMatchers("/api/auth/login").permitAll()
+                // Permite el acceso público a la consola H2 (útil para desarrollo).
                 .requestMatchers("/h2-console/**").permitAll()
+                // Permite a usuarios con roles 'USER' o 'ADMIN' acceder a los métodos GET de canciones y listas.
                 .requestMatchers(HttpMethod.GET, "/api/canciones/**", "/api/listas/**").hasAnyRole("USER", "ADMIN")
+                // Restringe los métodos POST de canciones y listas solo a usuarios con rol 'ADMIN'.
                 .requestMatchers(HttpMethod.POST, "/api/canciones/**", "/api/listas/**").hasRole("ADMIN")
+                // Restringe los métodos PUT de canciones y listas solo a usuarios con rol 'ADMIN'.
                 .requestMatchers(HttpMethod.PUT, "/api/canciones/**", "/api/listas/**").hasRole("ADMIN")
+                // Restringe los métodos DELETE de canciones y listas solo a usuarios con rol 'ADMIN'.
                 .requestMatchers(HttpMethod.DELETE, "/api/canciones/**", "/api/listas/**").hasRole("ADMIN")
+                // Cualquier otra petición debe estar autenticada.
                 .anyRequest().authenticated()
             )
+            // Configura el manejador de excepciones para la autenticación fallida.
             .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+            // Configura la gestión de sesiones como STATELESS, lo que significa que no se crean sesiones HTTP.
+            // Esto es crucial para una API REST que usa JWT, ya que cada petición lleva su propio token.
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
+        // Añade el filtro JWT personalizado antes del filtro de autenticación de usuario y contraseña de Spring Security.
+        // Esto asegura que el token JWT sea validado antes de que la autenticación estándar ocurra.
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         
+        // Configura las opciones de encabezado para permitir que la consola H2 se muestre en un iframe.
         httpSecurity.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
 
         return httpSecurity.build();
