@@ -16,6 +16,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.Arrays;
+import org.springframework.security.config.Customizer;
 
 @Configuration
 @EnableWebSecurity
@@ -49,6 +54,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
+            // Habilitar CORS usando la configuración definida en el bean corsConfigurationSource
+            .cors(Customizer.withDefaults())
             // Deshabilita la protección CSRF (Cross-Site Request Forgery) ya que la API es stateless y usa JWT.
             .csrf(csrf -> csrf.disable())
             // Configura las reglas de autorización para las peticiones HTTP.
@@ -82,5 +89,31 @@ public class SecurityConfig {
         httpSecurity.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
 
         return httpSecurity.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // Especificar el origen del frontend Angular
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        // Especificar los métodos HTTP permitidos
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // Especificar las cabeceras permitidas
+        configuration.setAllowedHeaders(Arrays.asList(
+            "Authorization", // Para el token JWT
+            "Content-Type",  // Para el tipo de contenido de la solicitud (ej. application/json)
+            "Cache-Control",
+            "X-Requested-With",
+            "Accept"
+        ));
+        // Permitir credenciales (si se usan cookies o autenticación HTTP básica, aunque para JWT stateless puede no ser estrictamente necesario)
+        configuration.setAllowCredentials(true); 
+        // Exponer cabeceras (si el frontend necesita leer alguna cabecera específica de la respuesta)
+        // configuration.setExposedHeaders(Arrays.asList("Authorization")); 
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // Aplicar esta configuración CORS a todas las rutas de la API
+        source.registerCorsConfiguration("/**", configuration); 
+        return source;
     }
 }
